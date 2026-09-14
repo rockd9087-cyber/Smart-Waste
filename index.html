@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Smart Waste Tracker | Live GPS & Citizen Rewards</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts for sleek modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+  <!-- Creative Background Animation Layer -->
+  <div class="bg-animation-container" id="bgAnimation">
+    <div class="floating-items" id="floatingWasteItems"></div>
+    <div class="city-skyline"></div>
+    <div class="truck-road-track">
+      <div class="animated-bg-truck" id="bgTruck">
+        <div class="bg-truck-smoke"></div>
+        <div class="bg-truck-body">
+          <span class="bg-truck-icon">🚛</span>
+          <span class="bg-truck-leaf">🌱</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main Mobile-Responsive App Shell -->
+  <div class="app-wrapper">
+    <!-- Top Header Navigation -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="logo-badge">
+          <span class="logo-icon">♻️</span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title-row">
+            <h1>SwachhTrack</h1>
+            <span class="govt-pill">Govt of India Initiative</span>
+          </div>
+          <p class="brand-sub">Smart Waste GPS & Eco-Rewards</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Notification Audio Toggle -->
+        <button id="toggleAudioAlertBtn" class="icon-btn" title="Proximity Sound Alert" aria-label="Toggle sound alerts">
+          <span id="audioIcon">🔔</span>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button id="themeToggleBtn" class="icon-btn theme-btn" title="Toggle Dark Mode" aria-label="Toggle dark mode">
+          <span id="themeIcon">🌙</span>
+        </button>
+
+        <!-- User Profile / Auth Button -->
+        <button id="userAuthBtn" class="user-profile-btn" aria-label="Citizen Account">
+          <div class="avatar-ring">
+            <span id="headerUserAvatar">👤</span>
+          </div>
+          <span id="headerUserName" class="user-name-label">Sign In</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Noise Pollution Reduction Banner -->
+    <section class="noise-reduction-banner">
+      <div class="banner-icon-pulse">
+        <span>🔇</span>
+      </div>
+      <div class="banner-content">
+        <strong>Zero-Horn Silent Zone Activated</strong>
+        <p>Live GPS replaces loud truck horns. You will receive an instant notification when the truck is 300m away!</p>
+      </div>
+      <button class="test-chime-btn" id="simulateNearbyBtn" title="Test proximity alert">
+        ⚡ Test Alert
+      </button>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="app-nav-tabs">
+      <button class="nav-tab active" data-tab="tab-tracking">
+        <span class="tab-icon">📍</span>
+        <span class="tab-label">Live GPS</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-disposal">
+        <span class="tab-icon">🚪</span>
+        <span class="tab-label">Smart Door & QR</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-rewards">
+        <span class="tab-icon">🎁</span>
+        <span class="tab-label">Points & Discounts</span>
+      </button>
+      <button class="nav-tab" data-tab="tab-schedule">
+        <span class="tab-icon">⏱️</span>
+        <span class="tab-label">Stops Schedule</span>
+      </button>
+    </nav>
+
+    <!-- TAB 1: LIVE GPS TRACKING -->
+    <main id="tab-tracking" class="tab-view active">
+      <!-- Live Status & Capacity Highlights -->
+      <section class="dashboard-grid">
+        <!-- Live Truck Status Card -->
+        <div class="metric-card highlight-card">
+          <div class="metric-header">
+            <span class="status-dot live-pulse"></span>
+            <span class="metric-title">TRUCK #DL-04-SW-2024</span>
+            <span class="badge speed-badge" id="truckSpeed">22 km/h</span>
+          </div>
+          <div class="metric-body">
+            <div class="metric-large">
+              <span id="truckDistanceToHome">380 m</span>
+              <span class="metric-sublabel">from your home</span>
+            </div>
+            <div class="eta-pill" id="truckEtaContainer">
+              <span class="eta-label">ETA:</span>
+              <span id="truckEta" class="eta-time">4 mins</span>
+            </div>
+          </div>
+          <div class="metric-footer">
+            <span class="current-stop-label">Current Route:</span>
+            <strong id="currentStopText">Sector 4, Green Market</strong>
+          </div>
+        </div>
+
+        <!-- Truck Capacity Gauge Card -->
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-icon">⚖️</span>
+            <span class="metric-title">Payload Capacity</span>
+            <span id="capacityPercentText" class="badge capacity-badge">58% Full</span>
+          </div>
+          <div class="capacity-gauge-container">
+            <div class="capacity-bar-track">
+              <div id="capacityBarFill" class="capacity-bar-fill" style="width: 58%;"></div>
+            </div>
+            <div class="capacity-labels">
+              <span>0% (Empty)</span>
+              <span id="capacityWeightText">2.9 / 5.0 Tons</span>
+              <span>100% (Full)</span>
+            </div>
+          </div>
+          <div id="capacityWarningBanner" class="capacity-warning hidden">
+            ⚠️ Truck nearing full capacity! Extra compaction cycle initiated.
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Live Map Section -->
+      <section class="map-card">
+        <div class="map-header">
+          <div class="map-title-wrap">
+            <span class="map-icon">🗺️</span>
+            <div>
+              <h3>Real-Time Route Radar</h3>
+              <p>Green Enclave • Ward 14 Municipal Circle</p>
+            </div>
+          </div>
+          <div class="map-controls">
+            <button id="centerTruckBtn" class="map-pill-btn" title="Focus on Truck">🎯 Focus Truck</button>
+            <button id="simSpeedBtn" class="map-pill-btn" title="Toggle simulation speed">⏩ 1x Speed</button>
+          </div>
+        </div>
+
+        <!-- Visual Interactive GPS Canvas Map -->
+        <div class="map-viewport">
+          <canvas id="gpsCanvas" width="700" height="420"></canvas>
+
+          <!-- Map Overlay Floating Radar Info -->
+          <div class="map-overlay-badge" id="mapStatusOverlay">
+            <span class="radar-ping"></span>
+            <span id="overlayStatusText">Truck en route to Stop 3</span>
+          </div>
+
+          <!-- Quick Simulation Action Bar -->
+          <div class="simulation-actions">
+            <button id="simPausePlayBtn" class="sim-btn">⏸️ Pause</button>
+            <button id="simNextStopBtn" class="sim-btn">⏭️ Next Stop</button>
+            <button id="simBringNearBtn" class="sim-btn active-highlight">📍 Move Near My Home</button>
+          </div>
+        </div>
+
+        <!-- Stop Progress Stepper -->
+        <div class="stops-stepper" id="stopsStepper">
+          <!-- Dynamically populated via script.js -->
+        </div>
+      </section>
+    </main>
+
+    <!-- TAB 2: SMART DISPOSAL DOOR & QR INTEGRATION -->
+    <section id="tab-disposal" class="tab-view">
+      <div class="disposal-layout">
+        <!-- Smart Door Simulation Card -->
+        <div class="smart-door-card">
+          <div class="door-status-header">
+            <div class="door-indicator">
+              <span id="doorLed" class="led-light locked"></span>
+              <span id="doorStatusText">DOOR LOCKED</span>
+            </div>
+            <span class="door-id">Door Bay #B2 • Pneumatic Sensor</span>
+          </div>
+
+          <div class="door-visual-container">
+            <div class="truck-door-graphic" id="truckDoorGraphic">
+              <div class="door-panel left-panel">
+                <span class="door-stripes"></span>
+              </div>
+              <div class="door-panel right-panel">
+                <span class="door-stripes"></span>
+              </div>
+              <div class="door-aperture-interior">
+                <div class="deposit-animation-item" id="depositAnimItem">📦</div>
+                <span class="weighing-sensor-readout" id="sensorWeightReadout">0.00 kg</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="door-instructions">
+            <p><strong>How it works:</strong> Scan the QR code located on the truck's smart door when disposing separated materials to unlock the bay and credit rewards directly to your citizen wallet.</p>
+          </div>
+        </div>
+
+        <!-- QR Scanner & Waste Segregation Console -->
+        <div class="scanner-console-card">
+          <div class="card-section-title">
+            <h3>Disposal & QR Scanner</h3>
+            <span class="points-rate-pill">Earn up to 50 Pts/kg</span>
+          </div>
+
+          <!-- Waste Type Selector -->
+          <div class="waste-type-selector">
+            <label class="form-label">Select Waste Category:</label>
+            <div class="waste-grid" id="wasteTypeGrid">
+              <button class="waste-opt active" data-type="plastic" data-rate="25">
+                <span class="waste-icon">🧴</span>
+                <span class="waste-name">Dry Plastic</span>
+                <span class="waste-rate">+25 pts/kg</span>
+              </button>
+              <button class="waste-opt" data-type="organic" data-rate="20">
+                <span class="waste-icon">🥬</span>
+                <span class="waste-name">Raw Kitchen</span>
+                <span class="waste-rate">+20 pts/kg</span>
+              </button>
+              <button class="waste-opt" data-type="paper" data-rate="15">
+                <span class="waste-icon">📦</span>
+                <span class="waste-name">Cardboard</span>
+                <span class="waste-rate">+15 pts/kg</span>
+              </button>
+              <button class="waste-opt" data-type="metal" data-rate="35">
+                <span class="waste-icon">🥫</span>
+                <span class="waste-name">Metals & Cans</span>
+                <span class="waste-rate">+35 pts/kg</span>
+              </button>
+              <button class="waste-opt" data-type="ewaste" data-rate="50">
+                <span class="waste-icon">🔋</span>
+                <span class="waste-name">E-Waste</span>
+                <span class="waste-rate">+50 pts/kg</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Waste Weight Slider -->
+          <div class="weight-control-group">
+            <div class="weight-label-row">
+              <label for="wasteWeightInput">Estimated Weight:</label>
+              <span class="weight-value" id="weightDisplay">2.5 kg</span>
+            </div>
+            <input type="range" id="wasteWeightInput" min="0.5" max="10.0" step="0.5" value="2.5" class="custom-slider" />
+            <div class="calculated-points-banner">
+              <span>Points to be earned:</span>
+              <strong id="potentialPoints">+62 Green Credits</strong>
+            </div>
+          </div>
+
+          <!-- QR Code & Scanner Interaction -->
+          <div class="qr-interaction-box">
+            <div class="qr-code-display">
+              <div class="qr-frame">
+                <!-- SVG Vector QR Code -->
+                <svg viewBox="0 0 100 100" class="qr-svg">
+                  <rect width="100" height="100" fill="white" />
+                  <!-- QR markers -->
+                  <rect x="5" y="5" width="30" height="30" fill="#0f172a" />
+                  <rect x="10" y="10" width="20" height="20" fill="white" />
+                  <rect x="15" y="15" width="10" height="10" fill="#0f172a" />
+
+                  <rect x="65" y="5" width="30" height="30" fill="#0f172a" />
+                  <rect x="70" y="10" width="20" height="20" fill="white" />
+                  <rect x="75" y="15" width="10" height="10" fill="#0f172a" />
+
+                  <rect x="5" y="65" width="30" height="30" fill="#0f172a" />
+                  <rect x="10" y="70" width="20" height="20" fill="white" />
+                  <rect x="15" y="75" width="10" height="10" fill="#0f172a" />
+
+                  <!-- Pattern dots -->
+                  <rect x="40" y="10" width="5" height="15" fill="#0f172a" />
+                  <rect x="50" y="5" width="8" height="8" fill="#0f172a" />
+                  <rect x="42" y="30" width="15" height="15" fill="#059669" />
+                  <rect x="10" y="42" width="15" height="8" fill="#0f172a" />
+                  <rect x="62" y="45" width="20" height="10" fill="#0f172a" />
+                  <rect x="42" y="65" width="12" height="15" fill="#0f172a" />
+                  <rect x="70" y="70" width="20" height="20" fill="#059669" />
+                  <circle cx="50" cy="50" r="5" fill="#10b981" />
+                </svg>
+                <div class="qr-scan-laser" id="qrLaser"></div>
+              </div>
+              <span class="qr-caption">Truck Door Code: #TRK-DEL-892</span>
+            </div>
+
+            <div class="qr-action-buttons">
+              <button id="scanQrSimBtn" class="primary-btn pulse-glow">
+                <span>📷 Scan Door QR & Deposit</span>
+              </button>
+              <button id="cameraScanToggleBtn" class="secondary-btn">
+                <span>📹 Open Mobile Camera</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Video Camera Viewfinder (Hidden by default, can be toggled) -->
+          <div id="cameraViewfinder" class="camera-viewfinder hidden">
+            <video id="webcamVideo" playsinline autoplay muted></video>
+            <div class="viewfinder-overlay">
+              <div class="scanner-crosshair"></div>
+              <p>Position Door QR Code within target</p>
+              <button id="closeCameraBtn" class="close-cam-btn">✕ Cancel Camera</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ECO CREDITS & GOVT COLLABORATIVE DISCOUNTS -->
+    <section id="tab-rewards" class="tab-view">
+      <!-- Citizen Wallet Summary Card -->
+      <div class="wallet-summary-card">
+        <div class="wallet-top-row">
+          <div>
+            <span class="wallet-label">Swachh Green Wallet</span>
+            <h2 id="walletBalanceText" class="wallet-points">450 <span class="pts-unit">Pts</span></h2>
+          </div>
+          <div class="wallet-eco-badge">
+            <span class="eco-rank-icon">🌟</span>
+            <span class="eco-rank-title">Eco Champion</span>
+          </div>
+        </div>
+
+        <div class="wallet-stats-grid">
+          <div class="wallet-stat">
+            <span class="stat-num" id="statWasteDisposed">32.5 kg</span>
+            <span class="stat-desc">Segregated Waste</span>
+          </div>
+          <div class="wallet-stat">
+            <span class="stat-num" id="statCo2Saved">19.2 kg</span>
+            <span class="stat-desc">CO₂ Offset</span>
+          </div>
+          <div class="wallet-stat">
+            <span class="stat-num" id="statVouchersClaimed">3</span>
+            <span class="stat-desc">Discounts Used</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Partner Discounts Section -->
+      <div class="rewards-section">
+        <div class="section-heading">
+          <div>
+            <h3>Govt of India Partner Rewards</h3>
+            <p>Redeem credits at collaborating restaurants & hotels across India</p>
+          </div>
+          <span class="govt-emblem-badge">🇮🇳 MoHUA Partnered</span>
+        </div>
+
+        <div class="rewards-grid" id="rewardsGrid">
+          <!-- Dynamically populated vouchers from script.js -->
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="history-section">
+        <div class="section-heading">
+          <h3>Recent Activity & Credits</h3>
+        </div>
+        <div class="history-list" id="historyList">
+          <!-- Dynamically populated transactions -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: UPCOMING STOPS TIMETABLE -->
+    <section id="tab-schedule" class="tab-view">
+      <div class="schedule-header-card">
+        <div class="schedule-intro">
+          <h3>Ward 14 Waste Route Schedule</h3>
+          <p>Truck #DL-04-SW-2024 • Shift 07:00 AM - 12:30 PM</p>
+        </div>
+        <div class="schedule-status-pill">
+          <span class="status-indicator-green"></span>
+          <span>On Schedule</span>
+        </div>
+      </div>
+
+      <div class="stops-timeline" id="stopsTimeline">
+        <!-- Dynamically generated timeline items -->
+      </div>
+    </section>
+  </div>
+
+  <!-- AUTHENTICATION MODAL (LOGIN & SIGN UP) -->
+  <div id="authModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <button id="closeAuthModalBtn" class="modal-close" aria-label="Close dialog">✕</button>
+
+      <div class="auth-header">
+        <div class="auth-logo">♻️</div>
+        <h2>Citizen Portal</h2>
+        <p>Login to track trucks, segregate waste, and redeem dining rewards.</p>
+      </div>
+
+      <!-- Auth Tabs Switcher -->
+      <div class="auth-mode-switch">
+        <button id="tabSignInBtn" class="auth-mode-tab active">Sign In</button>
+        <button id="tabSignUpBtn" class="auth-mode-tab">Sign Up</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" class="auth-form active">
+        <div class="form-group">
+          <label for="loginContact">Mobile Number or Email</label>
+          <input type="text" id="loginContact" placeholder="+91 98765 43210" required />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="submit-auth-btn">Sign In to Dashboard</button>
+        <div class="demo-login-box">
+          <span>Or try right away:</span>
+          <button type="button" id="quickDemoLoginBtn" class="demo-auth-btn">⚡ Quick Demo Citizen Login</button>
+        </div>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signUpForm" class="auth-form hidden">
+        <div class="form-group">
+          <label for="registerName">Full Name</label>
+          <input type="text" id="registerName" placeholder="Rajesh Sharma" required />
+        </div>
+        <div class="form-group">
+          <label for="registerPhone">Mobile Number (Aadhaar / OTP linked)</label>
+          <input type="tel" id="registerPhone" placeholder="+91 98123 45678" required />
+        </div>
+        <div class="form-group">
+          <label for="registerWard">Residential Ward / Address</label>
+          <select id="registerWard" required>
+            <option value="Ward 14 - Green Enclave">Ward 14 - Green Enclave, New Delhi</option>
+            <option value="Ward 08 - Indiranagar">Ward 08 - Indiranagar, Bengaluru</option>
+            <option value="Ward 22 - Bandra West">Ward 22 - Bandra West, Mumbai</option>
+            <option value="Ward 05 - Kothrud">Ward 05 - Kothrud, Pune</option>
+            <option value="Ward 11 - Jubilee Hills">Ward 11 - Jubilee Hills, Hyderabad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Create Password</label>
+          <input type="password" id="registerPassword" placeholder="Min. 6 characters" required />
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="segregationPledge" required checked />
+          <label for="segregationPledge">I pledge to segregate dry, wet, and hazardous recyclable materials.</label>
+        </div>
+        <button type="submit" class="submit-auth-btn">Register Citizen Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- REDEEM VOUCHER MODAL -->
+  <div id="voucherModal" class="modal-backdrop hidden">
+    <div class="modal-dialog voucher-dialog">
+      <button id="closeVoucherModalBtn" class="modal-close">✕</button>
+      <div class="voucher-modal-header">
+        <span class="govt-emblem">🏛️</span>
+        <h3>Swachh Bharat Reward Coupon</h3>
+        <p>Government of India Eco-Initiative</p>
+      </div>
+
+      <div class="coupon-ticket" id="couponTicket">
+        <div class="coupon-brand" id="couponPartnerName">Haldiram's Sweets & Restaurant</div>
+        <div class="coupon-offer" id="couponOfferText">FLAT 25% OFF ON TOTAL BILL</div>
+        <div class="coupon-code-box">
+          <span class="code-label">PROMO CODE:</span>
+          <strong id="couponCodeValue" class="promo-code">SWACHH-25-HLD</strong>
+          <button id="copyCodeBtn" class="copy-btn">📋 Copy</button>
+        </div>
+        <div class="coupon-meta">
+          <span id="couponExpiry">Valid for 30 days at all participating outlets</span>
+        </div>
+      </div>
+
+      <p class="voucher-disclaimer">Present this digital voucher or code at billing. Points have been deducted from your Swachh Wallet.</p>
+      <button id="dismissVoucherBtn" class="primary-btn">Done & Close</button>
+    </div>
+  </div>
+
+  <!-- Audio Chime Synthesizer using Web Audio API in script.js -->
+  <script src="script.js"></script>
+</body>
+</html>
