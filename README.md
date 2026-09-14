@@ -1,4 +1,4 @@
-# SwachhTrack - Waste Management Platform
+# Smart Waste - Track. Dispose. Reward.
 
 A citizen engagement platform for real-time waste truck tracking, smart disposal, and eco-rewards.
 
@@ -33,16 +33,6 @@ A citizen engagement platform for real-time waste truck tracking, smart disposal
    cd Waste-Management-2
    ```
 
-2. Run a local server
-   ```bash
-   python -m http.server 8000
-   # or use: npx http-server
-   ```
-
-3. Open in browser
-   ```
-   http://localhost:8000
-   ```
 
 ## Usage
 
@@ -53,7 +43,7 @@ A citizen engagement platform for real-time waste truck tracking, smart disposal
 
 ## License
 
-Open-source project for Swachh Bharat Mission initiative.
+Open-source project for Swachh Bharat.
 
 ---
 
