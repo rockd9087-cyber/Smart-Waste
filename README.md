@@ -1,4 +1,4 @@
-# SwachhTrack - Smart Waste GPS & Eco-Rewards Platform
+# SwachhTrack - Track. Dispose. Reward
 
 A Government of India-backed citizen engagement platform that combines **real-time GPS waste truck tracking**, **smart waste segregation**, and **eco-reward redemption** to revolutionize urban waste management.
 
